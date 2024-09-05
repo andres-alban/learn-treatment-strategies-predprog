@@ -1,0 +1,1 @@
+`run.bat` redirects stdout and stderr to print in log files in this folder 

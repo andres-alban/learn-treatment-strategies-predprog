@@ -1,0 +1,1 @@
+The plots will be saved as pdf files in this folder.
