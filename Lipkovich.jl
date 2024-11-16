@@ -134,6 +134,8 @@ policies = Dict{String,Policy}()
 for (name, labeling0) in labeling0_list
     theta0 = zeros(sum(labeling0))
     Sigma0 = diagm(1e6 * ones(sum(labeling0)))
+    
+    # random policy
     random_policy = RandomPolicyLinear(n, m, theta0, Sigma0, sample_std, labeling0)
     policies["random_"*name] = random_policy
 

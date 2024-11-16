@@ -16,15 +16,15 @@ include("code_fragments/MARS_model.jl")
 # Setting up prior
 # This experiment correctly labels prognostic and idle but labels all treatment effects as active and does not label Mars3 as predictive
 labeling0 = BitVector(
-    [0, 1, 1, 1, 1, 0, # prognostic
-    1, 0, 0, 0, 0, 0, # treatment 1
-    1, 0, 0, 0, 0, 0, # treatment 2
-    1, 0, 0, 0, 0, 0, # treatment 3
+    [1, 1, 1, 1, 1, 0, # prognostic
+    0, 0, 0, 0, 0, 0, # treatment 1
+    0, 0, 0, 0, 0, 0, # treatment 2
+    0, 0, 0, 0, 0, 0, # treatment 3
     1, 0, 0, 0, 0, 0, # treatment 4
-    1, 0, 0, 0, 0, 0, # treatment 5
-    1, 0, 0, 0, 0, 0, # treatment 6
-    1, 0, 0, 0, 0, 0, # treatment 7
-    1, 0, 0, 0, 0, 0, # treatment 8
+    0, 0, 0, 0, 0, 0, # treatment 5
+    0, 0, 0, 0, 0, 0, # treatment 6
+    0, 0, 0, 0, 0, 0, # treatment 7
+    0, 0, 0, 0, 0, 0, # treatment 8
 ])
 sigma0 = 2
 psi = log(2)

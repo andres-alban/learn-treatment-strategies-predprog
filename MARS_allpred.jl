@@ -14,17 +14,17 @@ using LinearAlgebra
 include("code_fragments/MARS_model.jl")
 
 # Setting up prior
-# This experiment correctly labels prognostic and idle but labels all treatment effects as active and does not label Mars3 as predictive
+# This experiment labels everything as predictive
 labeling0 = BitVector(
-    [0, 0, 0, 0, 0, 0, # prognostic
-    1, 1, 1, 1, 1, 1, # treatment 1
-    1, 1, 1, 1, 1, 1, # treatment 2
-    1, 1, 1, 1, 1, 1, # treatment 3
+    [1, 0, 0, 0, 0, 0, # prognostic
+    0, 1, 1, 1, 1, 1, # treatment 1
+    0, 1, 1, 1, 1, 1, # treatment 2
+    0, 1, 1, 1, 1, 1, # treatment 3
     1, 1, 1, 1, 1, 1, # treatment 4
-    1, 1, 1, 1, 1, 1, # treatment 5
-    1, 1, 1, 1, 1, 1, # treatment 6
-    1, 1, 1, 1, 1, 1, # treatment 7
-    1, 1, 1, 1, 1, 1, # treatment 8
+    0, 1, 1, 1, 1, 1, # treatment 5
+    0, 1, 1, 1, 1, 1, # treatment 6
+    0, 1, 1, 1, 1, 1, # treatment 7
+    0, 1, 1, 1, 1, 1, # treatment 8
 ])
 sigma0 = 2
 psi = log(2)
@@ -63,7 +63,7 @@ fEVIon_policy = fEVIDiscreteOnOff(n, m, theta0, Sigma0, sample_std, FX, P, T, la
 ## Biased Coin
 p1 = 0.5
 pk = vcat([p1], ones(n - 1) * (1 - p1) / (n - 1))
-Gweight = [1,0]
+Gweight = [1.0, 0.0]
 biasedcoin_policy = BiasedCoinPolicyLinear(n, m, theta0, Sigma0, sample_std, FX, labeling0; p=pk, weights=Gweight)
 
 ## OCBA
