@@ -17,14 +17,25 @@ catch
     println("Could not find pdflatex.")
 end
 
+# the folder from which data is read:
+# - data/ is where the provided data is stored (default)
+folder = if @isdefined(WEAVE_ARGS) && haskey(WEAVE_ARGS, "folder")
+    WEAVE_ARGS["folder"]
+elseif length(ARGS) > 0
+    ARGS[1]
+else
+    "data"
+end
+println(folder)
+
 #' ## Figures in Main Paper
 
 #+ echo = false, results = "hidden"
 ## Application 1: MARS
-results1 = load_results("MARS_known")
-results_allprog = load_results("MARS_allprog")
-results_allpred = load_results("MARS_allpred")
-resultsdyn = load_results("MARS_dynamic")
+results1 = load_results("MARS_known", folder)
+results_allprog = load_results("MARS_allprog", folder)
+results_allpred = load_results("MARS_allpred", folder)
+resultsdyn = load_results("MARS_dynamic", folder)
 results1["fEVIallprog"] = results_allprog["fEVI"]
 results1["fEVIallpred"] = results_allpred["fEVI"]
 results1["dynamic_fEVI_LassoCV_1se_rev"] = resultsdyn["dynamic_fEVI_LassoCV_1se_rev"]
@@ -71,7 +82,7 @@ println("TS sample size to be below random: ", find_first_below(results1["TS"]["
 
 #+ echo=false, results = "hidden"
 ## Application 2: Lipkovich
-results2 = load_results("Lipkovich")
+results2 = load_results("Lipkovich", folder)
 # "void" entries are meant to keep the same line style as the Mars experiments
 policy_keys_2 = ["fEVI_MC_known", "random_known", "void", "TS_known", "void", "fEVI_MCon_known"]
 policy_labels_2 = [L"$f$EVI-MC", "TTTS/Random", "void", "TS", "void", L"$f$EVI-MC$^{\textup{on}}$"]
@@ -92,7 +103,7 @@ println("TS sample size to be below fEVI_MCon: ", find_first_below(results2["TS_
 
 #' ### Figure 3a
 #+ echo = false
-results_MC = load_results("MARS_MC")
+results_MC = load_results("MARS_MC", folder)
 results_MC["fEVI"] = results1["fEVI"]
 policy_keys_MC = ["fEVI", "fEVI_MC_50", "fEVI_MC_20", "fEVI_MC_5", "fEVI_MC_1"]
 policy_labels_MC = [L"$f$EVI", L"$f$EVI-MC $\eta^{\textup{off}}=50$", L"$f$EVI-MC $\eta^{\textup{off}}=20$", L"$f$EVI-MC $\eta^{\textup{off}}=5$", L"$f$EVI-MC $\eta^{\textup{off}}=1$"]
@@ -102,9 +113,9 @@ generic_plot(results_MC, filename="MARS_MC", result_key="regret_off", ylabel="EO
 
 #' ### Figure 3b
 #+ echo = false
-results_delay = load_results("contMARS_delay20")
-results_delay50 = load_results("contMARS_delay50")
-results_cont = load_results("contMARS_known")
+results_delay = load_results("contMARS_delay20", folder)
+results_delay50 = load_results("contMARS_delay50", folder)
+results_cont = load_results("contMARS_known", folder)
 merge!(results_delay, results_delay50)
 results_delay["fEVI_MC_0_1_100"] = results_cont["fEVIMC"]
 results_delay["fEVI_MCon_0_1_100"] = results_cont["fEVIMCon"]
@@ -158,7 +169,7 @@ generic_plot(results2, filename="Lipkovich", result_key="cumulregret_on", ylabel
 
 #' ### Figure EC.3a
 #+ echo = false
-results_eps = load_results("MARS_RandEpsilon")
+results_eps = load_results("MARS_RandEpsilon", folder)
 results_eps["random"] = results1["random"]
 policy_keys_eps = ["fEVI", "fEVI_eps0.05", "fEVI_eps0.1", "fEVI_eps0.2", "random", "fEVI_eps0.5"]
 policy_labels_eps = [L"$f$EVI", L"$f$EVI-rand $\epsilon=0.05$", L"$f$EVI-rand $\epsilon=0.1$", L"$f$EVI-rand $\epsilon=0.2$", "Random", L"$f$EVI-rand $\epsilon=0.5$"]
@@ -173,10 +184,10 @@ generic_plot(results_eps, filename="MARS_RandEpsilonMC", result_key="regret_off"
 
 #' ### Figure EC.4
 #+ echo = false
-results1F = load_results("fiMARS_known")
-results_allprogF = load_results("fiMARS_allprog")
-results_allpredF = load_results("fiMARS_allpred")
-resultsdynF = load_results("fiMARS_dynamic")
+results1F = load_results("fiMARS_known", folder)
+results_allprogF = load_results("fiMARS_allprog", folder)
+results_allpredF = load_results("fiMARS_allpred", folder)
+resultsdynF = load_results("fiMARS_dynamic", folder)
 results1F["fEVIallprog"] = results_allprogF["fEVI"]
 results1F["fEVIallpred"] = results_allpredF["fEVI"]
 results1F["dynamic_fEVI_LassoCV_1se_rev"] = resultsdynF["dynamic_fEVI_LassoCV_1se_rev"]
@@ -187,7 +198,7 @@ generic_plot(results1F, filename="fiMARS", result_key="regret_off", ylabel="EOC"
 
 #' ### Figure EC.5
 #+ echo = false
-results_onoff = load_results("MARS_known_onoff")
+results_onoff = load_results("MARS_known_onoff", folder)
 policy_keys_onoff = ["TTTS", "RABC", "TS", "random"]
 policy_labels_onoff = ["TTTS", "RABC", "TS", "Random"]
 for k in policy_keys_onoff
@@ -262,7 +273,7 @@ nothing
 
 #' ### Figure EC.6
 #+ echo = false
-results_mis = load_results("Mars_mislabeling")
+results_mis = load_results("Mars_mislabeling", folder)
 merge!(results_mis, results1)
 
 policy_keys_mis = ["fEVI", "dynamic_fEVI_LassoCV_1se_rev", "fEVI_1", "fEVIallpred", "fEVIallprog", "fEVI_2", "fEVI_3", "fEVI_-1", "fEVI_-2", "fEVI_-3"]

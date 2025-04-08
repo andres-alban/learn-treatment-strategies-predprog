@@ -134,7 +134,7 @@ policies = Dict{String,Policy}()
 for (name, labeling0) in labeling0_list
     theta0 = zeros(sum(labeling0))
     Sigma0 = diagm(1e6 * ones(sum(labeling0)))
-    
+
     # random policy
     random_policy = RandomPolicyLinear(n, m, theta0, Sigma0, sample_std, labeling0)
     policies["random_"*name] = random_policy
@@ -204,7 +204,12 @@ end
 
 # run simulation
 T = 2400
-reps = 5000 # number of replications
+# number of replications (5000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    5000
+else
+    10
+end
 post_reps = 50
 delay = 0
 pilot_samples_per_treatment = 80
@@ -214,4 +219,5 @@ results = @time simulation_stochastic_parallel(reps, FX, n, T, policies, outcome
 
 
 ## Save
-save("data/Lipkovich.jld2", results)
+folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+save("$folder/Lipkovich.jld2", results)

@@ -78,6 +78,6 @@ function generic_plot(results;
     return pl
 end
 
-function load_results(filename)
-    return load("data/$(filename).jld2", "output")
+function load_results(filename, folder)
+    return load("$folder/$filename.jld2", "output")
 end

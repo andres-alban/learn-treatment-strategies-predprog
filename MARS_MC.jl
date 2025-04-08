@@ -33,9 +33,9 @@ robustify_prior_linear!(theta0, Sigma0, n, m, labeling0)
 # Policies
 # we keep etaoff fixed at 1
 etaoff = 1
-etaon_list = [1,5,10,20,50]
+etaon_list = [1, 5, 10, 20, 50]
 
-policies = Dict{String, Policy}()
+policies = Dict{String,Policy}()
 
 for etaon in etaon_list
     fevimc_simple_policy = ContextualBandits.fEVI_MC_simple_PolicyLinear(n, m, theta0, Sigma0, sample_std, FX, etaon, etaoff, labeling0)
@@ -47,7 +47,12 @@ end
 
 # Settings for simulation runs
 T = 1000
-reps = 5000 # number of replications
+# number of replications (5000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    5000
+else
+    10
+end
 post_reps = 50
 Xinterest = [
     1 1 1 1;
@@ -64,4 +69,5 @@ results = @time simulation_stochastic_parallel(reps, FX, n, T, policies, outcome
     FXtilde=FXtilde, delay=delay, post_reps=post_reps, rng=rng, Xinterest=Xinterest)
 
 ## Save
-save("data/MARS_MC.jld2", results)
+folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+save("$folder/MARS_MC.jld2", results)

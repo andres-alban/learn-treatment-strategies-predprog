@@ -33,7 +33,12 @@ robustify_prior_linear!(theta0, Sigma0, n, m, labeling0)
 
 # Settings for simulation runs
 T = 1000
-reps = 5000 # number of replications
+# number of replications (5000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    5000
+else
+    10
+end
 post_reps = 50
 Xinterest = [
     1 1 1 1;
@@ -45,13 +50,13 @@ Xinterest = [
 ]
 
 # we keep post_reps fixed at 10
-etaon_list = [5,10,25]
-etaoff_list = [5,10]
-delay_list = [20,50]
+etaon_list = [5, 10, 25]
+etaoff_list = [5, 10]
+delay_list = [20, 50]
 P = 0
 
-for (i,delay) in enumerate(delay_list)
-    policies = Dict{String, Policy}()
+for (i, delay) in enumerate(delay_list)
+    policies = Dict{String,Policy}()
     for etaon in etaon_list
         for etaoff in etaoff_list
             fevimc_policy = fEVI_MC_PolicyLinear(n, m, theta0, Sigma0, sample_std, FX, etaon, etaoff, labeling0)
@@ -79,5 +84,6 @@ for (i,delay) in enumerate(delay_list)
         FXtilde=FXtilde, delay=delay, post_reps=post_reps, rng=rng, Xinterest=Xinterest)
 
     ## Save
-    save("data/contMARS_delay$(delay).jld2", results)
+    folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+    save("$folder/contMARS_delay$(delay).jld2", results)
 end

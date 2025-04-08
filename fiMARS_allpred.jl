@@ -63,7 +63,7 @@ fEVIon_policy = fEVIDiscreteOnOff(n, m, theta0, Sigma0, sample_std, FX, P, T, la
 ## Biased Coin
 p1 = 0.5
 pk = vcat([p1], ones(n - 1) * (1 - p1) / (n - 1))
-Gweight = [1,0]
+Gweight = [1, 0]
 biasedcoin_policy = BiasedCoinPolicyLinear(n, m, theta0, Sigma0, sample_std, FX, labeling0; p=pk, weights=Gweight)
 
 ## OCBA
@@ -86,7 +86,12 @@ policies = Dict(
 
 # Settings for simulation runs
 T = 1000
-reps = 5000 # number of replications
+# number of replications (5000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    5000
+else
+    10
+end
 post_reps = 50
 Xinterest = [
     1 1 1 1;
@@ -103,4 +108,5 @@ results = @time simulation_stochastic_parallel(reps, FX, n, T, policies, outcome
     FXtilde=FXtilde, delay=delay, post_reps=post_reps, rng=rng, Xinterest=Xinterest)
 
 ## Save
-save("data/fiMARS_allpred.jld2", results)
+folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+save("$folder/fiMARS_allpred.jld2", results)

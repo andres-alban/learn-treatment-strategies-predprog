@@ -64,7 +64,12 @@ end
 
 # Settings for simulation runs
 T = 1000
-reps = 5000 # number of replications
+# number of replications (5000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    5000
+else
+    10
+end
 post_reps = 50
 Xinterest = [
     1 1 1 1;
@@ -81,4 +86,5 @@ results = @time simulation_stochastic_parallel(reps, FX, n, T, policies, outcome
     FXtilde=FXtilde, delay=delay, post_reps=post_reps, rng=rng, Xinterest=Xinterest)
 
 ## Save
-save("data/MARS_RandEpsilon.jld2", results)
+folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+save("$folder/MARS_RandEpsilon.jld2", results)

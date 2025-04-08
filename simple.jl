@@ -15,15 +15,15 @@ FX = CovariatesIndependent([Categorical([0.5, 0.5]), Categorical([0.5, 0.5])])
 m = length(FX)
 sample_std = 1.0
 labeling = BitVector(
-  [1, 1, 1, # prognostic
-  1, 1, 0,  # treatment 1
-  0, 0, 0,  # treatment 2
+    [1, 1, 1, # prognostic
+    1, 1, 0,  # treatment 1
+    0, 0, 0,  # treatment 2
 ])
 
 
 mu = [
-  1, -1, 1,  # prognostic
-  -1, 2      # treatment 1
+    1, -1, 1,  # prognostic
+    -1, 2      # treatment 1
 ]
 
 sum(labeling) == length(mu) # sanity check
@@ -69,7 +69,7 @@ biasedcoin_policy = BiasedCoinPolicyLinear(n, m, theta0, Sigma0, sample_std, FX,
 ocba_policy = OCBAPolicyLinear(n, m, theta0, Sigma0, sample_std, FX, labeling0)
 
 ## RABC
-Gweight = [1/3, 1/3, 1/3]
+Gweight = [1 / 3, 1 / 3, 1 / 3]
 RABC_policy = RABC_OCBA_PolicyLinear(n, m, theta0, Sigma0, sample_std, FX, labeling0; p=pk, weights=Gweight)
 
 ## Greedy
@@ -85,12 +85,17 @@ policies = Dict(
 
 # Settings for simulation runs
 T = 200
-reps = 500000 # number of replications
+# number of replications (500,000 for production and 10 for debugging)
+reps = if length(ARGS) > 0 && ARGS[1] == "prod"
+    500000
+else
+    10
+end
 post_reps = 50
 Xinterest = Float64[
-  1 1 1 1;
-  0 0 1 1;
-  0 1 0 1
+    1 1 1 1;
+    0 0 1 1;
+    0 1 0 1
 ]
 
 # run simulation
@@ -99,4 +104,5 @@ results = @time simulation_stochastic_parallel(reps, FX, n, T, policies, outcome
     delay=delay, post_reps=post_reps, rng=rng, Xinterest=Xinterest)
 
 ## Save
-save("data/simple.jld2", results)
+folder = length(ARGS) > 1 ? ARGS[2] : "mydata"
+save("$folder/simple.jld2", results)
